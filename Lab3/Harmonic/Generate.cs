@@ -1,3 +1,4 @@
+using System.Threading.Tasks.Dataflow;
 namespace Harmonic;
 public class Generate
 {
@@ -38,14 +39,75 @@ public class Generate
     }
 
     //* Функция генерации
-    public Issue generate() {
+    public Grid generate() {
         Path += "/grid";
         Directory.CreateDirectory(Path);
         Node[]  nodes  = generate_coords(); //? Генерация координат
         Elem[]  elems  = generate_elems();  //? Генерация КЭ
         Kraev[] kraevs = generate_kraevs(); //? Генерация краевых
 
-        return new Issue(N_X, N_Y, N_Z, nodes, elems, kraevs);
+        return new Grid(Count_Node, Count_Elem, Count_Kraev, nodes, elems, kraevs);
+    }
+
+    //* Функция трансформация сетки под синус и косинус
+    public Grid transformation(Grid grid) {
+
+        var newNodes = new Node[2*grid.Count_Node];
+        var newElems = new Elem[grid.Count_Elem];
+        var newKraev = new Kraev[grid.Count_Kraev];
+
+        // Дублирую координаты для расчетов функции синуса и косинуса (так удобнее)
+        for (int i = 0, id = 0; i < grid.Count_Node; i++) {
+            double x, y, z;
+            grid.Nodes[i].Deconstructor(out x, out y, out z);
+            newNodes[id++] = new Node(x, y, z);
+            newNodes[id++] = new Node(x, y, z);
+        }
+
+        // Проходим по элементам и делаем узлы (2i и 2i+1)
+        for (int i = 0; i < grid.Count_Elem; i++) {
+            int[] node = new int[8];
+            grid.Elems[i].Deconstructor(out node);
+            
+            var newNode = new int[16];
+            for (int j = 0, id = 0; j < node.Length; j++) {
+                newNode[id++] = 2*node[j];
+                newNode[id++] = 2*node[j] + 1;
+            }
+            newElems[i] = new Elem(newNode);
+        }
+
+        // Проходим по краевым и делаем узлы (2i и 2i+1)
+        for (int i = 0; i < grid.Count_Kraev; i++) {
+            int[] node = new int[4];
+            grid.Kraevs[i].Deconstructor(out node);
+            
+            var newNode = new int[8];
+            for (int j = 0, id = 0; j < node.Length; j++) {
+                newNode[id++] = 2*node[j];
+                newNode[id++] = 2*node[j] + 1;
+            }
+            newKraev[i] = new Kraev(newNode);
+        }
+
+        // Вычислим значения для каждого узла краевого 
+        List<int> lNodes = new List<int>();
+        for (int i = 0; i < newKraev.Length; i++)
+            for (int j = 0; j < 8; j++)
+                lNodes.Add(newKraev[i].Node[j]);
+        lNodes = lNodes.Distinct().OrderBy(x => x).ToList();
+                
+        var newnewKraev = new Kraev[lNodes.Count()];
+        for (int i = 0; i < lNodes.Count(); i++) {
+            int id = lNodes[i];
+            Vector node = new Vector(new double[] { newNodes[id].x, newNodes[id].y, newNodes[id].z });
+            if (id % 2 == 0)
+                newnewKraev[i] = new Kraev(id, Us(node));
+            else 
+                newnewKraev[i] = new Kraev(id, Uc(node)); 
+        }
+
+        return new Grid(2*grid.Count_Node, grid.Count_Elem, grid.Count_Kraev, newNodes, newElems, newnewKraev);
     }
 
     //* Генерация координат

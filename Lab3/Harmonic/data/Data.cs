@@ -10,6 +10,7 @@ public class Data
     public double   kx    { get; set; }       /// Коэффициент деления по Оси X  
     public double   ky    { get; set; }       /// Коэффициент деления по Оси Y  
     public double   kz    { get; set; }       /// Коэффициент деления по Оси Z 
+    public uint     N     { get; set; }       /// Номер функции
 
     //* Деконструктор
     public void Deconstruct(out Vector   Start, 
