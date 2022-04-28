@@ -2,10 +2,7 @@ namespace Harmonic;
 public static class Function
 {
     public static uint      NumberFunc;     /// Номер задачи
-    public static double    omega;
-    public static double    hi;
-    public static double    sigma; 
-    public static double    lambda;          
+    public static double    omega;         
 
     public static void Init(uint numF) {
         NumberFunc = numF;
@@ -13,9 +10,6 @@ public static class Function
         switch(NumberFunc) {
             case 1: 
                 omega  = 1000;
-                lambda = 1000;
-                sigma  = 3;
-                hi     = 1e-11;
             break;
         }
     }
@@ -56,7 +50,7 @@ public static class Function
         (double x, double y,  double z) = vec;
         return NumberFunc switch 
         {
-            1 => -hi*Us(vec)*Pow(omega, 2) - sigma*Uc(vec)*omega - 6*lambda*(x + y + z),
+            1 => -Hi(vec)*Us(vec)*Pow(omega, 2) - Sigma(vec)*Uc(vec)*omega - 6*Lambda(vec)*(x + y + z),
             _ => 0,
         };
     }  
@@ -66,10 +60,41 @@ public static class Function
         (double x, double y,  double z) = vec;
         return NumberFunc switch 
         {
-            1 => -hi*Uc(vec)*Pow(omega, 2) - sigma*Uc(vec)*omega - 6*lambda*(2*x - y + 3*z),
+            1 => -Hi(vec)*Uc(vec)*Pow(omega, 2) + Sigma(vec)*Us(vec)*omega - 6*Lambda(vec)*(2*x - y + 3*z),
             _ => 0,
         };
-    }  
+    } 
+
+    //* Лямбда
+    public static double Lambda(Vector vec) { 
+        (double x, double y,  double z) = vec;
+        return NumberFunc switch 
+        {
+            1 => 1000,
+            _ => 0,
+        };
+    }
+
+    //* Сигма
+    public static double Sigma(Vector vec) { 
+        (double x, double y,  double z) = vec;
+        return NumberFunc switch 
+        {
+            1 => 3,
+            _ => 0,
+        };
+    }
+
+    //* Кси
+    public static double Hi(Vector vec) { 
+        (double x, double y,  double z) = vec;
+        return NumberFunc switch 
+        {
+            1 => 1e-11,
+            _ => 0,
+        };
+    }
+
 
 
 }

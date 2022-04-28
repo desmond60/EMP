@@ -20,17 +20,13 @@
     grid = generator.transformation(grid);
 
     // Решение задачи
-    Solve task = new Solve(grid);
-    task.solve();
-
-    // Solve task = args[3] switch
-    // {
-    //     "iteration" => new Solve(data, Method.Iteration, uint.Parse(args[5])),
-    //     "newton"    => new Solve(data, Method.Newton,    uint.Parse(args[5])),
-    //     _           => new Solve(data, Method.Iteration, uint.Parse(args[5]))
-    // };
-    // task.SetPath(Path.GetDirectoryName(args[1])!);
-    // task.solve();
+    Solve task = new Solve(grid, Path.GetDirectoryName(args[1])!);
+    switch(args[2]) 
+    {
+        case "--los": task.solve(Method.LOS); break;
+        case "--lu" : task.solve(Method.LU ); break;
+        default     : task.solve(Method.LOS); break;
+    };
 }
 catch (FileNotFoundException ex) {
     WriteLine(ex.Message);

@@ -107,7 +107,7 @@ public class Generate
                 newnewKraev[i] = new Kraev(id, Uc(node)); 
         }
 
-        return new Grid(2*grid.Count_Node, grid.Count_Elem, grid.Count_Kraev, newNodes, newElems, newnewKraev);
+        return new Grid(2*grid.Count_Node, grid.Count_Elem, newnewKraev.Count(), newNodes, newElems, newnewKraev);
     }
 
     //* Генерация координат

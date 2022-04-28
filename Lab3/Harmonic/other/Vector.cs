@@ -92,7 +92,7 @@ public class Vector : IEnumerable
         if (vector == null) return vec.ToString();
 
         for (int i = 0; i < Length; i++)
-            vec.Append(vector[i] + "\t");    
+            vec.Append(vector[i].ToString("E3") + "\t");    
         
         return vec.ToString();
     }

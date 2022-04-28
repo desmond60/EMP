@@ -82,22 +82,44 @@ public struct Kraev    /// Структура краевого
     }
 }
 
-public struct SLAU                 /// Структура СЛАУ
+public struct SLAU     /// Структура СЛАУ
 {
     public Vector di, gl, gu;            /// Матрица
     public int[] ig, jg; 
-    public Vector f;                     /// Правая часть
-    public int N;                        /// Размерность
+    public Vector f, q;                  /// Правая часть и решение
+    public int N;                        /// Размерность матрицы
+    public int N_el;                     /// Размерность gl и gu
+
+    //* Умножение матрицы на вектор
+    public Vector Mull(Vector x) {
+        Vector result = new Vector(N);
+        for (int i = 0; i < N; i++) {
+            result[i] = di[i]*x[i];
+            for (int j = ig[i]; j < ig[i + 1]; j++){
+                result[i]      += gl[j]*x[jg[j]];
+                result[jg[j]]  += gu[j]*x[i];
+            }
+        }
+        return result;
+    }
 }
 
 public static class Helper
 {
     //: ***************** Перечисления ***************** :\\
     public enum Method {
-        Iteration, 
-        Newton
+        LOS, 
+        LU
     }
     //: ***************** Перечисления ***************** :\\
+
+    //* Скалярное произведение векторов
+    public static double Scalar(Vector frst, Vector scnd) {
+        double res = 0;
+        for (int i = 0; i < frst.Length; i++)
+            res += frst[i]*scnd[i];
+        return res;
+    }
 
     //* Вычисление нормы вектора
     public static double Norm(double[] array) {

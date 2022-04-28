@@ -4,6 +4,7 @@ global using static System.Console;
 global using System.Collections;
 global using static Harmonic.Function;
 global using Harmonic.other;
+global using Harmonic.methods;
 global using static Harmonic.other.Helper;
 global using Newtonsoft.Json;
 global using System.Text;
