@@ -134,8 +134,8 @@ public static class Helper
         WriteLine("----Команды----                        \n" + 
         "-help             - показать справку             \n" + 
         "-i                - входной файл                 \n" + 
-        "-m iteration      - метод простой итерации       \n" + 
-        "-m newton         - метод Ньютона                \n" + 
+        "--los             - метод LOS                    \n" + 
+        "--lu              - метод LU                     \n" + 
         "-func 'number'    - номер функции                \n");
     }
 }

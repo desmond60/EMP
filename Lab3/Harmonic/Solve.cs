@@ -1,3 +1,4 @@
+using System.Diagnostics;
 namespace Harmonic;
 
 public class Solve
@@ -7,14 +8,19 @@ public class Solve
 
     private string Path;                                      /// Путь к задаче
 
+    private Stopwatch time;                                   /// Для замера времени
+
     //: Табличка с окончательным решением
     StringBuilder table_sol;                                  /// Табличка с окончательным решением
+    StringBuilder table_rate;                                 /// Табличка с относительной погрешностью
     //: ----------------------------------------------------------
 
     //* Конструктор
     public Solve(Grid grid, string path) {
         this.grid = grid;
         this.Path = path;
+
+        time = new Stopwatch();
     }
 
     //* Основной метод решения
@@ -37,7 +43,9 @@ public class Solve
             _ => new LOS(slau, 1e-16, 10000)
         };
         issue.Path = this.Path;            //? Установление пути
+        time.Start();                      //? Запуск таймера
         slau.q = issue.solve(true);        //? Решение (true - записать итерации)
+        time.Stop();                       //? Остановка таймера
         output();                          //? Запись в файл решение
     }
 
@@ -214,6 +222,7 @@ public class Solve
 
     //* Запись решения
     private void output() {
+        //: Табличка с окончательным решением
         string margin = String.Join("", Enumerable.Repeat("-", 16));
         
         table_sol = new StringBuilder($"|U{" ",-14} | U`{" ",-12} | |U`- U| {" ",-7}|\n");
@@ -236,5 +245,35 @@ public class Solve
         table_sol.Append(String.Join("", Enumerable.Repeat("-", 52)) + "\n");
 
         File.WriteAllText(Path + "/table_sol.txt", table_sol.ToString());
+        //: ---------------------------------------------------------
+
+        //: Табличка с погрешностью 
+        table_rate = new StringBuilder();
+
+        double diffetence_sin, difference_cos, rate_u_sin, rate_u_cos;
+        difference_cos = diffetence_sin = rate_u_cos = rate_u_sin = 0;
+
+        for (int i = 0; i < grid.Count_Node / 2; i++) {
+            Vector node = new Vector(new double[] { grid.Nodes[2*i].x, grid.Nodes[2*i].y, grid.Nodes[2*i].z });
+            double us = Us(node);
+            double uc = Uc(node);
+            diffetence_sin += Pow((us - slau.q[2*i]), 2);
+            difference_cos += Pow((uc - slau.q[2*i + 1]), 2);
+            rate_u_sin     += Pow(us, 2);
+            rate_u_cos     += Pow(uc, 2);
+        }
+
+        table_rate.Append($"Общее: {Sqrt((diffetence_sin + difference_cos) / (rate_u_sin + rate_u_cos)).ToString("E6")}\n");
+        table_rate.Append($"Синус: {Sqrt(diffetence_sin / rate_u_sin).ToString("E6")}\n");
+        table_rate.Append($"Синус: {Sqrt(difference_cos / rate_u_cos).ToString("E6")}\n");
+        
+        TimeSpan ts = time.Elapsed;
+        string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+            ts.Hours, ts.Minutes, ts.Seconds,
+            ts.Milliseconds / 10);
+        table_rate.Append($"Время: {elapsedTime}\n");
+
+        File.WriteAllText(Path + "/table_rate.txt", table_rate.ToString());
+        //: ----------------------------------------------------------
     }
 }

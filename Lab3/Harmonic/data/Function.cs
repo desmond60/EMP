@@ -14,17 +14,6 @@ public static class Function
         }
     }
 
-    //* Абсолютное значение функции U
-    public static double Absolut(double x) { 
-        switch(NumberFunc)
-        {
-            case 1: /// test1-evenly (const)
-            return 2.5;
-
-        }
-        return 0;
-    }
-
     //* U-функция синуса
     public static double Us(Vector vec) {
         (double x, double y,  double z) = vec;
