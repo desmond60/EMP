@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using System.Diagnostics;
 namespace Harmonic;
 

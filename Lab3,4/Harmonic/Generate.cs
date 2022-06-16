@@ -28,13 +28,13 @@ public class Generate
 
         // Подсчет количества узлов на Осях 
         N_X = kx != 1
-            ? (int)(Log(1 - (end[0] - start[0])*(kx - 1) / hx) / Log(kx) + 2)
+            ? (int)(Log(1 - (end[0] - start[0])*(kx - 1) / -hx) / Log(kx) + 2)
             : (int)((end[0] - start[0]) / hx + 1);
         N_Y = ky != 1
-            ? (int)(Log(1 - (end[1] - start[1])*(ky - 1) / hy) / Log(ky) + 2)
+            ? (int)(Log(1 - (end[1] - start[1])*(ky - 1) / -hy) / Log(ky) + 2)
             : (int)((end[1] - start[1]) / hy + 1);
         N_Z = kz != 1
-            ? (int)(Log(1 - (end[2] - start[2])*(kz - 1) / hz) / Log(kz) + 2)
+            ? (int)(Log(1 - (end[2] - start[2])*(kz - 1) / -hz) / Log(kz) + 2)
             : (int)((end[2] - start[2]) / hz + 1);
     }
 
@@ -132,7 +132,7 @@ public class Generate
         var coords = new Vector(n);
         coords[0]     = start;
         coords[n - 1] = end;
-        for (int i = 1; i < n; i++, h *= k) 
+        for (int i = 1; i < n - 1; i++, h *= k) 
             coords[i] = coords[i - 1] + h;
         
         return coords;
